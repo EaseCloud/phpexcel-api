@@ -76,19 +76,21 @@ def render_excel(xlscript='', template=(), api_url='http://xlsapi', config=None)
 
 
 if __name__ == '__main__':
-    xlscript = '\r'.join((
-        'FILL|A1|姓名',
-        'FILL|B1|年龄',
-        'FILL|A2|张三',
-        'FILL|B2|18',
-        'FILL|A3|李四',
-        'FILL|B4|22',
+    xlscript = '$$$'.join((
+        # 'FILL|A1|姓名',
+        # 'FILL|B1|年龄',
+        # 'FILL|A2|张三',
+        # 'FILL|B2|18',
+        # 'FILL|A3|李四',
+        # 'FILL|B4|22',
+        'FILL|A1|this cell\nhas multline values',
+        'WRAP_TEXT|A1|A1|1',
+        'SET_URL|A1|http://www.baidu.com/'
     ))
 
     fname, bytes, mime = render_excel(
         xlscript,
-        r'C:\Users\Alfred\Desktop\（逸云科技）11.28招聘会参会意向书.xls',
-        config={'col_delimeter': '|'},
+        config={'row_delimeter': '$$$', 'col_delimeter': '|'},
     )
     fout = open('D:\\'+fname, 'wb')
     fout.write(bytes)

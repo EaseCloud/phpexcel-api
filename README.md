@@ -62,7 +62,17 @@ Content-Type: application/vnd.ms-excel
 
 ## 脚本命令 
 
-### 1. 填充单元格 **FILL**：
+
+### 选择 WorkSheet **SELECT_WORKSHEET** *[OK]*
++ index: 选择 worksheet 的序号（从 0 开始）
+
+例如下面的例子会当前活动的 worksheet 选择为第二个（下标为 1）
+
+```
+SELECT_WORKSHEET|1
+```
+
+### 填充单元格 **FILL** *[OK]*
 
 + cell: 单元格位置，例如 A1
 + content: 填充到该单元格的内容
@@ -73,7 +83,7 @@ Content-Type: application/vnd.ms-excel
 FILL|A1|今天天气很好，我们去割草
 ```
 
-### 2. 填充单元格（根据坐标） **FILL2**：
+### 填充单元格（根据坐标） **FILL2** *[OK]*
 
 + col: 列坐标，从 0 起算
 + row: 行坐标，从 1 起算
@@ -85,7 +95,7 @@ FILL|A1|今天天气很好，我们去割草
 FILL2|3|4|$5.25
 ```
 
-### 3. 合并单元格 **MERGE**:
+### 合并单元格 **MERGE** *[未实现]*
 + begin: 选取区域的开始单元格
 + end: 选取区域的结束单元格
 
@@ -95,7 +105,7 @@ FILL2|3|4|$5.25
 MERGE|A1|D3
 ```
 
-### 4. 调整区域样式 **STYLE**
+### 调整区域样式 **STYLE** *[未实现]*
 + begin: 选取区域的开始单元格
 + end: 选取区域的结束单元格
 + style: 加粗 BOLD / 斜体 ITALIC / 下划线 UNDERLINE，如果是取消对应的样式，在前面加`~`符号
@@ -112,7 +122,7 @@ STYLE|A2|A2|BOLD
 STYLE|A1|F100|~BOLD
 ```
 
-### 5. 调整字号 **FONTSIZE**
+### 调整字号 **FONT_SIZE** *[未实现]*
 + begin: 选取区域的开始单元格
 + end: 选取区域的结束单元格
 + size: 字号，用数字表示
@@ -120,5 +130,27 @@ STYLE|A1|F100|~BOLD
 例如下面的例子会将 A1 单元格字号调成 16
 
 ```
-FONTSIZE|A1|A1|16
+FONT_SIZE|A1|A1|16
+```
+
+### 调整单元格是否自动换行 **WRAP_TEXT** *[未生效]*
++ begin: 选取区域的开始单元格
++ end: 选取区域的结束单元格
++ wrap: 0 不换行，1 换行
+
+例如下面的例子会将 A1 单元格设置成自动换行
+
+```
+FILL|A1|this cell\nhas multline values
+WRAP_TEXT|A1|A1|1
+```
+
+### 设置单元格超链接 **SET_URL** *[OK]*
++ cell: 单元格位置，例如 A1
++ url: 设置单元格链接到的 url
+
+例如下面的例子会给 A1 单元格添加到百度的链接
+
+```
+SET_URL|A1|http://www.baidu.com/
 ```
