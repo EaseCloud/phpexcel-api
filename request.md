@@ -5,11 +5,14 @@ HTTP 请求格式：
 
 # 请求样例（省略了非关键的内容）
 
-```
-[Request Header]
-Content-Type: multipart/form-data; boundary=--FORM-BOUNDARY
 
-[Request Payload]
+**[Request Header]**
+```
+Content-Type: multipart/form-data; boundary=--FORM-BOUNDARY
+```
+
+**[Request Payload]**
+```
 --FORM-BOUNDARY
 Content-Disposition: form-data; name="template"; filename="人员名录.xls"
 Content-Type: application/vnd.ms-excel
