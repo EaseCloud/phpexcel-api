@@ -24,7 +24,7 @@ phpexcel-api
 
 ```
 [Request Headers]
-**Content-Type:** Content-Type:multipart/form-data; boundary=BOUNDER_STRING
+Content-Type: Content-Type:multipart/form-data; boundary=BOUNDER_STRING
 ```
 
 因此，POST 的请求体里面包括两个主要的部分：
@@ -38,12 +38,12 @@ phpexcel-api
 
 请求发出之后，本接口会打开模板 xls 文件，然后顺着脚本内容填充数据，最后返回一个响应下载 xls。
 
-具体的响应头如下：
+具体的响应头形如：
 
 ```
 [Response Headers]
-**Content-Disposition:** attachment; filename="excel.xls"
-**Content-Type:** application/vnd.ms-excel
+Content-Disposition: attachment; filename="excel.xls"
+Content-Type: application/vnd.ms-excel
 ```
 
 注意两点：
