@@ -42,12 +42,14 @@ phpexcel-api
 > **Content-Type:** application/vnd.ms-excel
 
 注意两点：
+
 1. 如果上传的模板文件是 xlsx 的 2007 格式，响应回来的格式会是 xlsx，否则为 xls；
 2. 返回的文件名是配置的文件名，缺省为模板的文件名，如模板缺省，则为 excel.xls。
 
 # 填充脚本
 
 本 api 的运作步骤如下：
+
 1. 打开一个模板文件，转到第一个 WorkSheet；
 2. 根据配置项*row_delimeter*分割脚本行，每行一个脚本命令；
 3. 根据配置项*col_delimeter*分割每个脚本命令，得到命令参数 args；
@@ -56,6 +58,7 @@ phpexcel-api
 ## 脚本命令 
 
 ### 1. 填充单元格 **F**：
+
 + cell: 单元格位置，例如 A1
 + content: 填充到该单元格的内容
 
