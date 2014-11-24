@@ -81,3 +81,5 @@ Content-Disposition: form-data; name="config"
 如果是文件上传，那么这里应该放置待上传文件的二进制流；如果是表单字段，那就应当是表单字段的文本内容直接写在里面。
 
 OK，只要是用这种方式进行提交，就可以跟我们的 api 对接上了，因为 api 里面是通过 `$_FILES['template']` 来获取文件，然后通过 `$_POST['data']` 获取脚本，并通过 `$_POST['config']` 来获取配置的。
+
+最后提醒一下，所有的请求体 Payload 里面的空行，都是以 `\r\n` 进行换行的。
