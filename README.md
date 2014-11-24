@@ -22,8 +22,10 @@ phpexcel-api
 
 因此，请求头应当符合如下格式，这一点请自行参见 multipart/form-data 请求的实现方法：
 
-[Request Headers]<br>
+```
+[Request Headers]
 **Content-Type:** Content-Type:multipart/form-data; boundary=BOUNDER_STRING
+```
 
 因此，POST 的请求体里面包括两个主要的部分：
 
@@ -38,9 +40,11 @@ phpexcel-api
 
 具体的响应头如下：
 
-[Response Headers]<br>
-**Content-Disposition:** attachment; filename="excel.xls"<br>
+```
+[Response Headers]
+**Content-Disposition:** attachment; filename="excel.xls"
 **Content-Type:** application/vnd.ms-excel
+```
 
 注意两点：
 
