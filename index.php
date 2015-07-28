@@ -40,38 +40,46 @@ if(!empty($_FILES['template']) && $_FILES['template']['error'] === 0) {
 	}
 }
 
-
 // Fill
 $worksheet = $objPHPExcel->setActiveSheetIndex(0);
-if(!empty($_POST['xlscript'])) {
+
+function xlsapi_fill(&$worksheet, $xlscript) {
+
+    global $config;
+
     foreach(explode($config['row_delimiter'], $_POST['xlscript']) as $row) {
         $args = explode($config['col_delimiter'], trim($row));
-		if($args[0] == 'SELECT_WORKSHEET') {
+        if($args[0] == 'SELECT_WORKSHEET') {
             $index = intval($args[1]);
             $worksheet = $objPHPExcel->setActiveSheetIndex($index);
-		} elseif ($args[0] == 'FILL') {
+        } elseif ($args[0] == 'FILL') {
             $cell = $args[1];
             $content = $args[2];
             $worksheet->setCellValue($cell, $content);
-		} elseif ($args[0] == 'FILL2') {
+        } elseif ($args[0] == 'FILL2') {
             $col = intval($args[1]);
             $row = intval($args[2]);
             $content = $args[3];
             $worksheet->setCellValueByColumnAndRow($col, $row, $content);
-		} elseif ($args[0] == 'MERGE') {
-		} elseif ($args[0] == 'STYLE') {
-		} elseif ($args[0] == 'FONTSIZE') {
-		} elseif ($args[0] == 'WRAP_TEXT') {
+        } elseif ($args[0] == 'MERGE') {
+        } elseif ($args[0] == 'STYLE') {
+        } elseif ($args[0] == 'FONTSIZE') {
+        } elseif ($args[0] == 'WRAP_TEXT') {
             $begin = intval($args[1]);
             $end = intval($args[2]);
             $wrap = $args[3] != '0';
             $worksheet->getStyle("$begin:$end")->getAlignment()->setWrapText($wrap);
-		} elseif ($args[0] == 'SET_URL') {
+        } elseif ($args[0] == 'SET_URL') {
             $cell = $args[1];
             $url = $args[2];
             $worksheet->getCell($cell)->getHyperlink()->setUrl($url);
-		}
+        }
     }
+
+}
+
+
+if(!empty($_POST['xlscript'])) {
 }
 
 
