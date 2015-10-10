@@ -1,8 +1,5 @@
 <?php include 'phpexcel/Classes/PHPExcel.php';
 
-//print_r($_FILES);
-//exit();
-
 define('MIME_XLS', 'application/vnd.ms-excel');
 define('MIME_XLSX', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 
@@ -39,6 +36,7 @@ if(!empty($_FILES['template']) && $_FILES['template']['error'] === 0) {
 		$config['export_name'] = $file_uploaded['name'];
 	}
 }
+
 
 // Fill
 $worksheet = $objPHPExcel->setActiveSheetIndex(0);
@@ -80,6 +78,7 @@ function xlsapi_fill(&$worksheet, $xlscript) {
 
 
 if(!empty($_POST['xlscript'])) {
+    xlsapi_fill($worksheet, $_POST['xlscript']);
 }
 
 
