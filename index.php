@@ -1,4 +1,4 @@
-<?php include 'phpexcel/Classes/PHPExcel.php';
+<?php include 'PHPExcel/Classes/PHPExcel.php';
 
 define('MIME_XLS', 'application/vnd.ms-excel');
 define('MIME_XLSX', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
