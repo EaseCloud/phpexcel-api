@@ -13,7 +13,7 @@ phpexcel-api
 ```http
 <form action="xlsapi/index.php" method="post" enctype="multipart/form-data">
     <input type="file" name="template" />
-    <textarea name="data"></textarea>
+    <textarea name="xlscript"></textarea>
     <input type="submit" />
 </form>
 ```
