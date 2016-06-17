@@ -95,7 +95,8 @@ FILL|A1|今天天气很好，我们去割草
 FILL2|3|4|$5.25
 ```
 
-### 合并单元格 **MERGE** *[未实现]*
+### 合并单元格 **MERGE** *[OK]*
+
 + begin: 选取区域的开始单元格
 + end: 选取区域的结束单元格
 
@@ -105,7 +106,83 @@ FILL2|3|4|$5.25
 MERGE|A1|D3
 ```
 
-### 调整区域样式 **STYLE** *[未实现]*
+### 调整水平对齐 **ALIGN** *[OK]*
+
++ begin: 选取区域的开始单元格
++ end: 选取区域的结束单元格
++ pValue: 对齐方式：
+  * general: 无
+  * left: 左对齐
+  * right: 右对齐
+  * center: 居中对齐
+  * centerContinuous: 连续居中对齐
+  * justify:
+  * fill:
+  * distributed: (Excel2007+ Only)
+
+例如，下面的例子会将 A1-D3 这 12 个单元格设置为右对齐：
+
+```
+ALIGN|A1|D3|right
+```
+
+### 调整垂直对齐 **VALIGN** *[OK]*
+
++ begin: 选取区域的开始单元格
++ end: 选取区域的结束单元格
++ pValue: 对齐方式：
+  * bottom: 靠下
+  * top: 靠上
+  * center: 居中
+  * justify:
+  * distributed: (Excel2007+ Only)
+
+例如，下面的例子会将 A1-D3 这 12 个单元格设置为垂直居中：
+
+```
+VALIGN|A1|D3|center
+```
+
+### 设置边框样式 **SET_BORDER** *[OK]*
+
++ begin: 选取区域的开始单元格
++ end: 选取区域的结束单元格
++ border_position: 边框位置
+  * all
+  * outline
+  * inside
+  * horizontal
+  * vertical
+  * top
+  * right
+  * bottom
+  * left
+  * diagonal
++ border_style: 边框的样式
+  * none
+  * dashDot
+  * dashDotDot
+  * dashed
+  * dotted
+  * double
+  * hair
+  * medium
+  * mediumDashDot
+  * mediumDashDotDot
+  * mediumDashed
+  * slantDashDot
+  * thick
+  * thin
++ border_color: ARGB 表示的边框颜色，例如半透明红色为 7FFF0000
+
+例如下面例子将 A3-C5 单元格全部框线设置为普通红色框线
+
+```
+SET_BORDER|A3|C5|thin|FFFF0000
+```
+
+### 调整区域样式 **STYLE** *[OK]*
+
 + begin: 选取区域的开始单元格
 + end: 选取区域的结束单元格
 + style: 加粗 BOLD / 斜体 ITALIC / 下划线 UNDERLINE，如果是取消对应的样式，在前面加`~`符号
@@ -122,7 +199,30 @@ STYLE|A2|A2|BOLD
 STYLE|A1|F100|~BOLD
 ```
 
-### 调整字号 **FONT_SIZE** *[未实现]*
+### 设置列宽度 **SET_WIDTH** *[OK]*
+
++ col: 列名，例如 C 或者 AZ
++ width: 像素宽度
+
+例如将 D 列宽度设置为 22.75 像素
+
+```
+SET_WIDTH|D|22.75
+```
+
+### 设置列高度 **SET_HEIGHT** *[OK]*
+
++ row: 行号，例如 1
++ height: 像素高度
+
+例如将第一行高度设置为 18.5 像素
+
+```
+SET_HEIGHT|1|18.5
+```
+
+### 调整字号 **FONT_SIZE** *[OK]*
+
 + begin: 选取区域的开始单元格
 + end: 选取区域的结束单元格
 + size: 字号，用数字表示
@@ -133,7 +233,8 @@ STYLE|A1|F100|~BOLD
 FONT_SIZE|A1|A1|16
 ```
 
-### 调整单元格是否自动换行 **WRAP_TEXT** *[未生效]*
+### 调整单元格是否自动换行 **WRAP_TEXT** *[OK]*
+
 + begin: 选取区域的开始单元格
 + end: 选取区域的结束单元格
 + wrap: 0 不换行，1 换行

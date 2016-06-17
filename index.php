@@ -102,6 +102,7 @@ function xlsapi_fill(&$objPHPExcel, $xlscript)
             $worksheet->getStyle("$begin:$end")->getAlignment()->setHorizontal($pValue);
 
         } elseif ($args[0] == 'VALIGN') {
+            
             /* Vertical alignment styles */
 //            const VERTICAL_BOTTOM					= 'bottom';
 //            const VERTICAL_TOP						= 'top';
@@ -112,6 +113,7 @@ function xlsapi_fill(&$objPHPExcel, $xlscript)
             $end = $args[2];
             $pValue = $args[3];
             $worksheet->getStyle("$begin:$end")->getAlignment()->setVertical($pValue);
+            
         } elseif ($args[0] == 'SET_BORDER') {
 
             $begin = $args[1];
@@ -182,56 +184,44 @@ function xlsapi_fill(&$objPHPExcel, $xlscript)
             }
 
         } elseif ($args[0] == 'STYLE') {
+            // 设置字体样式
 
             $begin = $args[1];
             $end = $args[2];
-            $style_type = $args[3];
-
+            
+            $style_type = strtoupper($args[3]);
+            
             $style = $worksheet->getStyle("$begin:$end")->getFont();
 
-            switch ($style_type) {
-                case 'blod':
-                    $style->setBold(true);
-                    break;
-                case '~blod':
-                    $style->setBold(false);
-                    break;
-                case 'italic':
-                    $style->setItalic(true);
-                    break;
-                case '~italic':
-                    $style->setItalic(false);
-                    break;
-                case 'underline':
-                    $style->setUnderline(true);
-                    break;
-                case '~underline':
-                    $style->setUnderline(false);
-                    break;
-                default:
-                    $style = false;
+            $toggle = substr($style_type, 0, 1) != '~';
+            $action = preg_replace('/^~/', '', $style_type);
+
+            switch ($action) {
+                case 'BOLD': $style->setBold($toggle); break;
+                case 'ITALIC': $style->setItalic($toggle); break;
+                case 'UNDERLINE': $style->setUnderline($toggle); break;
+                default: continue;
             }
-            if (!$style) continue;
 
         } elseif ($args[0] == 'SET_WIDTH') {
 
             $col = $args[1];
-            $width = $args[2];
+            $width = doubleval($args[2]);
 
             $worksheet->getColumnDimension($col)->setWidth($width);
 
         } elseif ($args[0] == 'SET_HEIGHT') {
 
             $row = $args[1];
-            $height = $args[2];
+            $height = doubleval($args[2]);
 
             $worksheet->getRowDimension($row)->setRowHeight($height);
 
-        } elseif ($args[0] == 'FONTSIZE') {
+        } elseif ($args[0] == 'FONT_SIZE') {
 
             $begin = $args[1];
             $end = $args[2];
-            $font_size = intval($args[3]);
+            $font_size = doubleval($args[3]);
 
             $worksheet->getStyle("$begin:$end")->getFont()->setSize($font_size);
 
