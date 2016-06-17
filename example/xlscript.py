@@ -59,6 +59,9 @@ def render_excel_response(xlscript='',
     }.items(), template and [('template', template)]
     )
 
+    req = Request(api_url, data=body, headers={'Content-Type': content_type})
+    return urlopen(req)
+
 
 def render_excel(xlscript='', template=(), api_url='http://excelapi', config=None):
     """请求一个 xlscript 渲染，返回文件名，文件二进制内容，以及 mime 类型
