@@ -1,4 +1,6 @@
-<?php include 'PHPExcel/Classes/PHPExcel.php';
+<?php 
+
+include 'PHPExcel/Classes/PHPExcel.php';
 
 define('MIME_XLS', 'application/vnd.ms-excel');
 define('MIME_XLSX', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -10,7 +12,7 @@ $default_config = array(
     'export_type' => 'Excel5', // can be Excel2007
     'export_mime' => MIME_XLS, // can be MIME_XLSX
     'row_delimiter' => "\r",
-    'col_delimiter' => "\t",
+    'col_delimiter' => "|",
 );
 
 $user_config = isset($_POST['config']) ? json_decode($_POST['config'], true) : array();
@@ -18,74 +20,251 @@ $config = array_merge($default_config, $user_config);
 
 
 $objPHPExcel = new PHPExcel();
-if(!empty($_FILES['template']) && $_FILES['template']['error'] === 0) {
+if (!empty($_FILES['template']) && $_FILES['template']['error'] === 0) {
 
     $file_uploaded = $_FILES['template'];
 
     // Init Template
     try {
         $objPHPExcel = PHPExcel_IOFactory::load($file_uploaded['tmp_name']);
-    } catch(Exception $e) {}
-	
-    if(!isset($user_config['export_mime']) and $file_uploaded['type'] == MIME_XLSX) {
-		$config['export_type'] = 'Excel2007';
-		$config['export_mime'] = MIME_XLSX;
-	}
+    } catch (Exception $e) {
+        var_dump($e);
+        die;
+    }
 
-	if(!isset($user_config['export_name'])) {
-		$config['export_name'] = $file_uploaded['name'];
-	}
+    if (!isset($user_config['export_mime']) and $file_uploaded['type'] == MIME_XLSX) {
+        $config['export_type'] = 'Excel2007';
+        $config['export_mime'] = MIME_XLSX;
+    }
+
+    if (!isset($user_config['export_name'])) {
+        $config['export_name'] = $file_uploaded['name'];
+    }
 }
 
 
 // Fill
-$worksheet = $objPHPExcel->setActiveSheetIndex(0);
 
-function xlsapi_fill(&$worksheet, $xlscript) {
+/**
+ * @param $objPHPExcel PHPExcel
+ * @param $xlscript string
+ */
+function xlsapi_fill(&$objPHPExcel, $xlscript)
+{
 
     global $config;
 
-    foreach(explode($config['row_delimiter'], $_POST['xlscript']) as $row) {
+    $worksheet = $objPHPExcel->setActiveSheetIndex(0);
+
+    foreach (explode($config['row_delimiter'], $xlscript) as $row) {
+
         $args = explode($config['col_delimiter'], trim($row));
-        if($args[0] == 'SELECT_WORKSHEET') {
+
+        if ($args[0] == 'SELECT_WORKSHEET') {
+
             $index = intval($args[1]);
             $worksheet = $objPHPExcel->setActiveSheetIndex($index);
+
         } elseif ($args[0] == 'FILL') {
+
             $cell = $args[1];
             $content = $args[2];
             $worksheet->setCellValue($cell, $content);
+
         } elseif ($args[0] == 'FILL2') {
+
             $col = intval($args[1]);
             $row = intval($args[2]);
             $content = $args[3];
             $worksheet->setCellValueByColumnAndRow($col, $row, $content);
+
         } elseif ($args[0] == 'MERGE') {
+
+            // 合并后的内容会以$begin单元格的内容填充
+            $begin = $args[1];
+            $end = $args[2];
+            $worksheet->mergeCells("$begin:$end");
+
+        } elseif ($args[0] == 'ALIGN') {
+
+            /* Horizontal alignment styles */
+//            const HORIZONTAL_GENERAL				= 'general';
+//            const HORIZONTAL_LEFT					= 'left';
+//            const HORIZONTAL_RIGHT					= 'right';
+//            const HORIZONTAL_CENTER					= 'center';
+//            const HORIZONTAL_CENTER_CONTINUOUS		= 'centerContinuous';
+//            const HORIZONTAL_JUSTIFY				= 'justify';
+//            const HORIZONTAL_FILL				    = 'fill';
+//            const HORIZONTAL_DISTRIBUTED		    = 'distributed';        // Excel2007 only
+            $begin = $args[1];
+            $end = $args[2];
+            $pValue = $args[3];
+            $worksheet->getStyle("$begin:$end")->getAlignment()->setHorizontal($pValue);
+
+        } elseif ($args[0] == 'VALIGN') {
+            /* Vertical alignment styles */
+//            const VERTICAL_BOTTOM					= 'bottom';
+//            const VERTICAL_TOP						= 'top';
+//            const VERTICAL_CENTER					= 'center';
+//            const VERTICAL_JUSTIFY					= 'justify';
+//            const VERTICAL_DISTRIBUTED		        = 'distributed';        // Excel2007 only
+            $begin = $args[1];
+            $end = $args[2];
+            $pValue = $args[3];
+            $worksheet->getStyle("$begin:$end")->getAlignment()->setVertical($pValue);
+        } elseif ($args[0] == 'SET_BORDER') {
+
+            $begin = $args[1];
+            $end = $args[2];
+
+            $borders = $worksheet->getStyle("$begin:$end")->getBorders();
+
+            $border_position = @$args[3] ?: 'all';  // top left bottom right diagonal
+
+            switch ($border_position) {
+                case 'all':
+                    $border = $borders->getAllBorders();
+                    break;
+                case 'outline':
+                    $border = $borders->getOutline();
+                    break;
+                case 'inside':
+                    $border = $borders->getInside();
+                    break;
+                case 'horizontal':
+                    $border = $borders->getHorizontal();
+                    break;
+                case 'vertical':
+                    $border = $borders->getVertical();
+                    break;
+                case 'top':
+                    $border = $borders->getTop();
+                    break;
+                case 'right':
+                    $border = $borders->getRight();
+                    break;
+                case 'bottom':
+                    $border = $borders->getBottom();
+                    break;
+                case 'left':
+                    $border = $borders->getLeft();
+                    break;
+                case 'diagonal':
+                    $border = $borders->getDiagonal();
+                    break;
+                default:
+                    $border = false;
+            }
+            if (!$border) continue;
+
+            $border_style = @$args[4];
+            if ($border_style) {
+//                const BORDER_NONE				= 'none';
+//                const BORDER_DASHDOT			= 'dashDot';
+//                const BORDER_DASHDOTDOT			= 'dashDotDot';
+//                const BORDER_DASHED				= 'dashed';
+//                const BORDER_DOTTED				= 'dotted';
+//                const BORDER_DOUBLE				= 'double';
+//                const BORDER_HAIR				= 'hair';
+//                const BORDER_MEDIUM				= 'medium';
+//                const BORDER_MEDIUMDASHDOT		= 'mediumDashDot';
+//                const BORDER_MEDIUMDASHDOTDOT	= 'mediumDashDotDot';
+//                const BORDER_MEDIUMDASHED		= 'mediumDashed';
+//                const BORDER_SLANTDASHDOT		= 'slantDashDot';
+//                const BORDER_THICK				= 'thick';
+//                const BORDER_THIN				= 'thin';
+                $border->setBorderStyle($border_style);
+            }
+
+            $border_color = @$args[5];  // of type 'AARRGGBB'
+            if ($border_color) {
+                $border->getColor()->setARGB($border_color);
+            }
+
         } elseif ($args[0] == 'STYLE') {
+
+            $begin = $args[1];
+            $end = $args[2];
+            $style_type = $args[3];
+
+            $style = $worksheet->getStyle("$begin:$end")->getFont();
+
+            switch ($style_type) {
+                case 'blod':
+                    $style->setBold(true);
+                    break;
+                case '~blod':
+                    $style->setBold(false);
+                    break;
+                case 'italic':
+                    $style->setItalic(true);
+                    break;
+                case '~italic':
+                    $style->setItalic(false);
+                    break;
+                case 'underline':
+                    $style->setUnderline(true);
+                    break;
+                case '~underline':
+                    $style->setUnderline(false);
+                    break;
+                default:
+                    $style = false;
+            }
+            if (!$style) continue;
+
+        } elseif ($args[0] == 'SET_WIDTH') {
+
+            $col = $args[1];
+            $width = $args[2];
+
+            $worksheet->getColumnDimension($col)->setWidth($width);
+
+        } elseif ($args[0] == 'SET_HEIGHT') {
+
+            $row = $args[1];
+            $height = $args[2];
+
+            $worksheet->getRowDimension($row)->setRowHeight($height);
+
         } elseif ($args[0] == 'FONTSIZE') {
+
+            $begin = $args[1];
+            $end = $args[2];
+            $font_size = intval($args[3]);
+
+            $worksheet->getStyle("$begin:$end")->getFont()->setSize($font_size);
+
+
         } elseif ($args[0] == 'WRAP_TEXT') {
+
             $begin = intval($args[1]);
             $end = intval($args[2]);
             $wrap = $args[3] != '0';
             $worksheet->getStyle("$begin:$end")->getAlignment()->setWrapText($wrap);
+
         } elseif ($args[0] == 'SET_URL') {
+
             $cell = $args[1];
             $url = $args[2];
             $worksheet->getCell($cell)->getHyperlink()->setUrl($url);
+
         }
     }
 
 }
 
 
-if(!empty($_POST['xlscript'])) {
-    xlsapi_fill($worksheet, $_POST['xlscript']);
+if (@$_POST['xlscript']) {
+    xlsapi_fill($objPHPExcel, $_POST['xlscript']);
 }
 
+//exit('----');
 
 // Export
 // Redirect output to a client's web browser
 $ua = $_SERVER["HTTP_USER_AGENT"];
-$export_name_encoded = str_replace("+", "%20",urlencode($config['export_name']));
+$export_name_encoded = str_replace("+", "%20", urlencode($config['export_name']));
 if (preg_match("/MSIE/", $ua)) {
     header('Content-Disposition: attachment; filename="' . $export_name_encoded . '"');
 } else if (preg_match("/Firefox/", $ua)) {
