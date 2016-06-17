@@ -56,8 +56,8 @@ Content-Type: application/vnd.ms-excel
 本 api 的运作步骤如下：
 
 1. 打开一个模板文件，转到第一个 WorkSheet；
-2. 根据配置项*row_delimeter*分割脚本行，每行一个脚本命令；
-3. 根据配置项*col_delimeter*分割每个脚本命令，得到命令参数 args；
+2. 根据配置项*row_delimiter*分割脚本行，每行一个脚本命令；
+3. 根据配置项*col_delimiter*分割每个脚本命令，得到命令参数 args；
 4. 执行命令，args 第一个参数为命令名称，后面的是命令参数；
 
 ## 脚本命令 

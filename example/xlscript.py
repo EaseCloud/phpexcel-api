@@ -2,7 +2,7 @@ import os
 import re
 import json
 from urllib.request import urlopen, Request
-from urllib.parse import quote, unquote
+from urllib.parse import quote, unquote, urlencode
 import mimetypes
 import requests
 
@@ -10,16 +10,18 @@ import requests
 def get_content_type(file_path):
     return mimetypes.guess_type(file_path)[0] or 'application/octet-stream'
 
- 
+
 def encode_multipart_formdata(fields, files=()):
     """
     fields is a sequence of (name, value) elements for regular form fields.
     files is a sequence of (name, filepath) elements for data to be uploaded as files
     Return (content_type, body) ready for httplib.HTTP instance
-    """ 
+    :param fields: The fields to encode.
+    :param files: The file-type field set.
+    """
     boundary = '----xlsapi-boundary'
     lines = []
-    for (key, value) in fields: 
+    for (key, value) in fields:
         lines.append('--' + boundary)
         lines.append('Content-Disposition: form-data; name="%s"' % key)
         lines.append('')
@@ -36,18 +38,20 @@ def encode_multipart_formdata(fields, files=()):
     lines.append('--' + boundary + '--')
     body = b'\r\n'.join([l.encode() if type(l) == str else l for l in lines])
     content_type = 'multipart/form-data; boundary=%s' % boundary
-    return content_type, body 
+    return content_type, body
 
 
-def render_excel_response(xlscript='', template=(), api_url='http://xlsapi', config=None):
+def render_excel_response(xlscript='',
+                          template=(),
+                          api_url='http://excelapi',
+                          config=None):
     """发送请求处理一个 xlscript 渲染
-    Returns :class:`Response <Response>` object.
-
     返回一个 http.client.HTTPResponse 对象，该响应对应于一个 excel 文件的下载响应。
-
-    :param data: 提交的 xlscript 脚本文本
+    :param xlscript: 提交的 xlscript 脚本文本
     :param template: (可选) excel 模板的路径
     :param config: (可选) 配置项参数
+    :param api_url: phpexcel-api 的服务 url
+    :returns: :class:`Response <Response>` object.
     """
     content_type, body = encode_multipart_formdata({
         'xlscript': xlscript,
@@ -55,13 +59,12 @@ def render_excel_response(xlscript='', template=(), api_url='http://xlsapi', con
     }.items(), template and [('template', template)]
     )
 
-    request = Request(api_url, data=body, headers={'Content-Type': content_type})
-    return urlopen(request)
 
-
-# return: (file_name, bytes, mime_type)
-def render_excel(xlscript='', template=(), api_url='http://xlsapi', config=None):
+def render_excel(xlscript='', template=(), api_url='http://excelapi', config=None):
     """请求一个 xlscript 渲染，返回文件名，文件二进制内容，以及 mime 类型
+    :param xlscript: 渲染的 xlscript 脚本
+    :param template:
+    :return: (file_name, bytes, mime_type)
     """
     response = render_excel_response(xlscript, template, api_url, config)
     assert response.status == 200, '接口调用失败，返回状态码：'+response.status
@@ -75,24 +78,12 @@ def render_excel(xlscript='', template=(), api_url='http://xlsapi', config=None)
     )
 
 
-if __name__ == '__main__':
-    xlscript = '$$$'.join((
-        # 'FILL|A1|姓名',
-        # 'FILL|B1|年龄',
-        # 'FILL|A2|张三',
-        # 'FILL|B2|18',
-        # 'FILL|A3|李四',
-        # 'FILL|B4|22',
-        'FILL|A1|this cell\nhas multline values',
-        'WRAP_TEXT|A1|A1|1',
-        'SET_URL|A1|http://www.baidu.com/'
-    ))
+def render_xlscript(xlscript):
 
-    fname, bytes, mime = render_excel(
+    fname, data, mime = render_excel(
         xlscript,
-        config={'row_delimeter': '$$$', 'col_delimeter': '|'},
+        config={'row_delimiter': '$$$', 'col_delimiter': '|'},
     )
-    fout = open('D:\\'+fname, 'wb')
-    fout.write(bytes)
-    fout.close()
-
+    resp = HttpResponse(data, content_type=mime)
+    resp['Content-Disposition'] = 'attachment; ' + urlencode({'filename': fname})
+    return resp
