@@ -248,7 +248,10 @@ function xlsapi_fill(&$objPHPExcel, $xlscript)
 
 
 if (@$_POST['xlscript']) {
-    xlsapi_fill($objPHPExcel, $_POST['xlscript']);
+    $xlscript = $_POST['xlscript'];
+    $xlscript = str_replace("\r\n", "\n", $xlscript);
+    $xlscript = str_replace("\r", "\n", $xlscript);
+    xlsapi_fill($objPHPExcel, $xlscript);
 }
 
 //exit('----');
