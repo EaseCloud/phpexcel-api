@@ -5,6 +5,8 @@ include 'PHPExcel/Classes/PHPExcel.php';
 define('MIME_XLS', 'application/vnd.ms-excel');
 define('MIME_XLSX', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 
+date_default_timezone_set('Asia/Shanghai');
+
 // Initialize
 
 $default_config = array(
