@@ -3,6 +3,8 @@ phpexcel-api
 
 一个 php 处理 excel 的 http api，供其他程序语言调用。
 
+Python SDK: <https://github.com/EaseCloud/python-xlscript>
+
 基本架构：
 ---------
 
