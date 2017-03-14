@@ -267,7 +267,7 @@ function xlsapi_render($objPHPExcel)
 {
     global $config;
 
-    $ua = $_SERVER["HTTP_USER_AGENT"];
+    $ua = @$_SERVER["HTTP_USER_AGENT"] ?: '';
 
     $export_name_encoded = str_replace("+", "%20", urlencode($config['export_name']));
     if (preg_match("/MSIE/", $ua)) {
