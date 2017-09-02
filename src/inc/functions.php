@@ -202,6 +202,11 @@ function xlsapi_fill(&$objPHPExcel, $xlscript)
             $url = $args[2];
             $worksheet->getCell($cell)->getHyperlink()->setUrl($url);
 
+        } elseif ($args[0] == 'INSERT_ROW') {
+
+            $row_name = $args[1];
+            $row_num = $args[2];
+            $worksheet->insertNewRowBefore($row_name,$row_num);
         }
     }
 

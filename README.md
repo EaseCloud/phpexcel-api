@@ -257,3 +257,13 @@ WRAP_TEXT|A1|A1|1
 ```
 SET_URL|A1|http://www.baidu.com/
 ```
+
+### 插入整行 **INSERT_ROW** *[OK]*
++ cell: 单元格位置，例如 A1
++ number: 插入行数量，插入number行
+
+例如下面的例子会给 A1 插入10行
+
+```
+INSERT_ROW|A1|10
+```
