@@ -4,9 +4,9 @@
 /**
  * @param $objPHPExcel PHPExcel
  * @param $xlscript string
+ * @throws PHPExcel_Exception
  */
-function xlsapi_fill(&$objPHPExcel, $xlscript)
-{
+function xlsapi_fill(&$objPHPExcel, $xlscript) {
 
     global $config;
 
@@ -206,7 +206,7 @@ function xlsapi_fill(&$objPHPExcel, $xlscript)
 
             $row_name = $args[1];
             $row_num = $args[2];
-            $worksheet->insertNewRowBefore($row_name,$row_num);
+            $worksheet->insertNewRowBefore($row_name, $row_num);
         }
     }
 
@@ -216,9 +216,9 @@ function xlsapi_fill(&$objPHPExcel, $xlscript)
 /**
  * @param $objPHPExcel PHPExcel
  * @return array
+ * @throws PHPExcel_Exception
  */
-function xlsapi_read($objPHPExcel)
-{
+function xlsapi_read($objPHPExcel) {
 
     $sheet_count = $objPHPExcel->getSheetCount();
 
@@ -244,7 +244,7 @@ function xlsapi_read($objPHPExcel)
 
             $max_column = 0;
             foreach ($cellIterator as $cell) {
-                $val = $cell->getValue();
+                $val = $cell->getCalculatedValue();
                 $row_data [] = $val;
                 if ($val !== null) $max_column = sizeof($row_data);
             }
@@ -268,8 +268,7 @@ function xlsapi_read($objPHPExcel)
  * Render the $objPHPExcel object to the http response.
  * @param $objPHPExcel
  */
-function xlsapi_render($objPHPExcel)
-{
+function xlsapi_render($objPHPExcel) {
     global $config;
 
     $ua = @$_SERVER["HTTP_USER_AGENT"] ?: '';
